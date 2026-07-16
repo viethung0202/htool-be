@@ -5,17 +5,25 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "prisma:tasks:generate": "prisma generate --schema=tools/tasks/prisma/schema.prisma",
+    "prisma:tasks:migrate": "prisma migrate dev --schema=tools/tasks/prisma/schema.prisma",
+    "prisma:auth:generate": "prisma generate --schema=common/auth/prisma/schema.prisma",
+    "prisma:auth:migrate": "prisma migrate dev --schema=common/auth/prisma/schema.prisma"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@prisma/client": "^6.19.3",
+    "bcrypt": "^6.0.0",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.7.4"
   },
   "devDependencies": {
-    "prettier": "^3.9.5"
+    "prettier": "^3.9.5",
+    "prisma": "^6.19.3"
   }
 }

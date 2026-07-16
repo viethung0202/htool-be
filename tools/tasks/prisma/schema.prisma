@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("TASKS_DB_URL")
+  directUrl = env("TASKS_DIRECT_URL")
+}
+
+// Bảng rút gọn, chỉ để FK nội bộ trong DB này — id phải khớp User.id bên common/auth.
+// Đồng bộ qua common/provisionUser.js mỗi khi có user mới, không tự động.
+model User {
+  id     String  @id
+  boards Board[]
+}
+
+model Board {
+  id        Int      @id @default(autoincrement())
+  title     String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  lists     List[]
+  createdAt DateTime @default(now())
+}
+
+model List {
+  id       Int    @id @default(autoincrement())
+  title    String
+  position Int
+  board    Board  @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  boardId  Int
+  cards    Card[]
+}
+
+model Card {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  position    Int
+  list        List     @relation(fields: [listId], references: [id], onDelete: Cascade)
+  listId      Int
+  createdAt   DateTime @default(now())
+}
