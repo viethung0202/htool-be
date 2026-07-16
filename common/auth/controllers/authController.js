@@ -31,6 +31,11 @@ function logout(req, res) {
   res.json({ message: 'Logged out' });
 }
 
+async function me(req, res) {
+  const user = await authService.getMe(req.userId);
+  res.json(user);
+}
+
 async function listUsers(req, res) {
   const users = await authService.listUsers();
   res.json(users);
@@ -41,4 +46,4 @@ async function setAccept(req, res) {
   res.json(user);
 }
 
-module.exports = { register, login, logout, listUsers, setAccept };
+module.exports = { register, login, logout, me, listUsers, setAccept };

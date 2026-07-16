@@ -24,6 +24,13 @@ async function login(email, password) {
   return { token };
 }
 
+async function getMe(userId) {
+  return prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true, email: true, role: true },
+  });
+}
+
 async function listUsers() {
   return prisma.user.findMany({
     select: { id: true, email: true, role: true, isAccept: true, createdAt: true },
@@ -34,4 +41,4 @@ async function setAccept(userId, isAccept) {
   return prisma.user.update({ where: { id: userId }, data: { isAccept } });
 }
 
-module.exports = { register, login, listUsers, setAccept };
+module.exports = { register, login, getMe, listUsers, setAccept };
