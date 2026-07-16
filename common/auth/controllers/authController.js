@@ -1,5 +1,12 @@
 const authService = require('../services/authService');
 
+const COOKIE_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 days
+const COOKIE_OPTIONS = {
+  httpOnly: true,
+  sameSite: 'lax',
+  secure: process.env.NODE_ENV === 'production',
+};
+
 async function register(req, res) {
   const { email, password } = req.body;
   const user = await authService.register(email, password);
@@ -8,9 +15,30 @@ async function register(req, res) {
 
 async function login(req, res) {
   const { email, password } = req.body;
-  const token = await authService.login(email, password);
-  if (!token) return res.status(401).json({ error: 'Invalid credentials' });
-  res.json({ token });
+  const result = await authService.login(email, password);
+  if (result.error === 'not_accepted') {
+    return res.status(403).json({ error: 'Account is awaiting approval' });
+  }
+  if (result.error) {
+    return res.status(401).json({ error: 'Invalid credentials' });
+  }
+  res.cookie('token', result.token, { ...COOKIE_OPTIONS, maxAge: COOKIE_MAX_AGE });
+  res.json({ message: 'Logged in' });
 }
 
-module.exports = { register, login };
+function logout(req, res) {
+  res.clearCookie('token', COOKIE_OPTIONS);
+  res.json({ message: 'Logged out' });
+}
+
+async function listUsers(req, res) {
+  const users = await authService.listUsers();
+  res.json(users);
+}
+
+async function setAccept(req, res) {
+  const user = await authService.setAccept(req.params.id, req.body.isAccept);
+  res.json(user);
+}
+
+module.exports = { register, login, logout, listUsers, setAccept };

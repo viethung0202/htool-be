@@ -12,8 +12,26 @@ async function register(email, password) {
 
 async function login(email, password) {
   const user = await prisma.user.findUnique({ where: { email } });
-  if (!user || !(await bcrypt.compare(password, user.password))) return null;
-  return jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+  if (!user || !(await bcrypt.compare(password, user.password))) {
+    return { error: 'invalid_credentials' };
+  }
+  if (!user.isAccept) {
+    return { error: 'not_accepted' };
+  }
+  const token = jwt.sign({ userId: user.id, role: user.role }, process.env.JWT_SECRET, {
+    expiresIn: '7d',
+  });
+  return { token };
 }
 
-module.exports = { register, login };
+async function listUsers() {
+  return prisma.user.findMany({
+    select: { id: true, email: true, role: true, isAccept: true, createdAt: true },
+  });
+}
+
+async function setAccept(userId, isAccept) {
+  return prisma.user.update({ where: { id: userId }, data: { isAccept } });
+}
+
+module.exports = { register, login, listUsers, setAccept };
