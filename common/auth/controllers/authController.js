@@ -9,8 +9,15 @@ const COOKIE_OPTIONS = {
 
 async function register(req, res) {
   const { email, password } = req.body;
-  const user = await authService.register(email, password);
-  res.status(201).json({ id: user.id, email: user.email });
+  try {
+    const user = await authService.register(email, password);
+    res.status(201).json({ id: user.id, email: user.email });
+  } catch (err) {
+    if (err.code === 'P2002') {
+      return res.status(409).json({ error: 'Email already registered' });
+    }
+    throw err;
+  }
 }
 
 async function login(req, res) {
