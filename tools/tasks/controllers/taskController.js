@@ -11,18 +11,38 @@ async function createBoard(req, res) {
 }
 
 async function createList(req, res) {
-  const list = await taskService.createList(req.body.title, req.body.position, req.body.boardId);
-  res.status(201).json(list);
+  try {
+    const list = await taskService.createList(
+      req.userId,
+      req.body.title,
+      req.body.position,
+      req.body.boardId,
+    );
+    res.status(201).json(list);
+  } catch (err) {
+    if (err instanceof taskService.ForbiddenError) {
+      return res.status(403).json({ error: err.message });
+    }
+    throw err;
+  }
 }
 
 async function createCard(req, res) {
-  const card = await taskService.createCard(
-    req.body.title,
-    req.body.description,
-    req.body.position,
-    req.body.listId,
-  );
-  res.status(201).json(card);
+  try {
+    const card = await taskService.createCard(
+      req.userId,
+      req.body.title,
+      req.body.description,
+      req.body.position,
+      req.body.listId,
+    );
+    res.status(201).json(card);
+  } catch (err) {
+    if (err instanceof taskService.ForbiddenError) {
+      return res.status(403).json({ error: err.message });
+    }
+    throw err;
+  }
 }
 
 module.exports = { listBoards, createBoard, createList, createCard };
