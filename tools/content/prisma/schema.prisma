@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("CONTENT_DB_URL")
+  directUrl = env("CONTENT_DIRECT_URL")
+}
+
+// Bảng rút gọn, chỉ để FK nội bộ trong DB này — id phải khớp User.id bên common/auth.
+// Đồng bộ qua common/provisionUser.js mỗi khi có user mới, không tự động.
+model User {
+  id    String        @id
+  items ContentItem[]
+}
+
+enum ContentStatus {
+  IDEA
+  RECORDING
+  POSTED
+}
+
+model ContentItem {
+  id          Int           @id @default(autoincrement())
+  title       String
+  script      String?
+  status      ContentStatus @default(IDEA)
+  plannedDate DateTime?
+  views       Int?
+  likes       Int?
+  user        User          @relation(fields: [userId], references: [id])
+  userId      String
+  createdAt   DateTime      @default(now())
+}

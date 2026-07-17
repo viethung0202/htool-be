@@ -11,7 +11,9 @@
     "prisma:tasks:generate": "prisma generate --schema=tools/tasks/prisma/schema.prisma",
     "prisma:tasks:migrate": "prisma migrate dev --schema=tools/tasks/prisma/schema.prisma",
     "prisma:auth:generate": "prisma generate --schema=common/auth/prisma/schema.prisma",
-    "prisma:auth:migrate": "prisma migrate dev --schema=common/auth/prisma/schema.prisma"
+    "prisma:auth:migrate": "prisma migrate dev --schema=common/auth/prisma/schema.prisma",
+    "prisma:content:generate": "prisma generate --schema=tools/content/prisma/schema.prisma",
+    "prisma:content:migrate": "prisma migrate dev --schema=tools/content/prisma/schema.prisma"
   },
   "keywords": [],
   "author": "",
